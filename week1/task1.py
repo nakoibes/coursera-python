@@ -1,7 +1,5 @@
 import sys
 
-digit_string = sys.argv[1]
-
 
 def digit_sum(digit_string):
     result = 0
@@ -10,5 +8,10 @@ def digit_sum(digit_string):
     return result
 
 
-if __name__ == '__main__':
+def main():
+    digit_string = sys.argv[1]
     print(digit_sum(digit_string))
+
+
+if __name__ == '__main__':
+    main()
