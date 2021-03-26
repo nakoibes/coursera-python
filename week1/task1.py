@@ -2,17 +2,14 @@ import sys
 
 
 def convert_string_to_list(input_data: str) -> list[int]:
-    good_data = []
-    for digit in input_data:
-        good_data.append(digit)
-    return good_data
+    digit_list = []
+    for character in input_data:
+        digit_list.append(int(character))
+    return digit_list
 
 
 def digit_sum(digit_list: list[int]) -> int:
-    result = 0
-    for digit in digit_list:
-        result += int(digit)
-    return result
+    return sum(digit_list)
 
 
 def main():
