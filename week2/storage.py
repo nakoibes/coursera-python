@@ -10,7 +10,7 @@ def write_the_data(key: str, value: str) -> None:
         f.write(value + ' ')
 
 
-def get_values(key):
+def get_values(key: str) -> list[str]:
     dictionary = {}
     storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
     with open(storage_path, 'r') as f:
@@ -22,7 +22,7 @@ def get_values(key):
     return dictionary[key]
 
 
-def get_data():
+def get_data() -> list[str]:
     parser = argparse.ArgumentParser()
     parser.add_argument('-k', '--key', help='display a key')
     parser.add_argument('-v', '--value', help='display a value')
