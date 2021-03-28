@@ -10,7 +10,7 @@ def write_the_data(key: str, value: str) -> None:
         f.write(value + ' ')
 
 
-def get_values(key: str) -> list[str]:
+def get_values(key: str) -> list[str] or None:
     dictionary = {}
     storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
     with open(storage_path, 'r') as f:
@@ -19,7 +19,10 @@ def get_values(key: str) -> list[str]:
         for index in range(0, len(line) - 1, 2):
             dictionary.setdefault(line[index], [])
             dictionary[line[index]].append(line[index + 1])
-    return dictionary[key]
+    if dictionary[key]:
+        return dictionary[key]
+    else:
+        return None
 
 
 def get_data() -> list[str]:
@@ -31,15 +34,20 @@ def get_data() -> list[str]:
 
 
 def main():
-    data = get_data()
-    key = data[0]
-    value = data[1]
-    if key and value:
-        write_the_data(key, value)
-    elif key:
-        print(*get_values(key),sep = ', ')
-    else:
-        print('No Data')
+    try:
+        data = get_data()
+        key = data[0]
+        value = data[1]
+        if key and value:
+            write_the_data(key, value)
+        elif key:
+            print(*get_values(key), sep=', ')
+        else:
+            print('No Data')
+    except FileNotFoundError:
+        print('There is no storage.data ')
+    except KeyError:
+        print('None')
 
 
 if __name__ == '__main__':
