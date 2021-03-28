@@ -37,7 +37,7 @@ def main():
     if key and value:
         write_the_data(key, value)
     elif key:
-        result = print(*get_values(key))
+        print(*get_values(key),sep = ', ')
     else:
         print('No Data')
 
