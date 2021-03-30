@@ -8,10 +8,12 @@ def to_json(func):
     return wrapper
 
 
+@to_json
+def get_data():
+    return {'data': 42}
+
+
 def main():
-    @to_json
-    def get_data():
-        return {'data': 42}
     print(get_data())
 
 
