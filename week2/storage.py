@@ -5,7 +5,8 @@ import tempfile
 
 def write_the_data(key_data: str, value_data: str) -> None:
     storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
-    with open(storage_path, 'a') as f:
+    with open(storage_path, 'a'
+                            '') as f:
         f.write(key_data + ' ')
         f.write(value_data + ' ')
 
@@ -17,7 +18,7 @@ def get_values(key_data: str) -> list[str] or None:
         line_list = line.split()
         key_list = [line_list[index] for index in range(0, len(line_list), 2)]
         key_set = set(key_list)
-        dictionary = {key: ([line_list[index + 1] for index in range(0, len(line_list), 2) if line_list[index] == key])
+        dictionary = {key: [line_list[index + 1] for index in range(0, len(line_list), 2) if line_list[index] == key]
                       for key in key_set}
     if dictionary[key_data]:
         return dictionary[key_data]
