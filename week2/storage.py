@@ -37,17 +37,13 @@ def get_data() -> list[str]:
 
 
 def main():
-    try:
-        key_data, value_data = get_data()
-        if key_data and value_data:
-            write_the_data(key_data, value_data)
-        elif key_data:
-            print(', '.join(get_values(key_data)))
-        else:
-            print('No Data')
-    except KeyError:
-        print('None')
-
+    key_data, value_data = get_data()
+    if key_data and value_data:
+        write_the_data(key_data, value_data)
+    elif key_data:
+        print(', '.join(get_values(key_data)))
+    else:
+        print('No Data')
 
 if __name__ == '__main__':
     main()
