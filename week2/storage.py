@@ -6,7 +6,7 @@ import tempfile
 
 def write_the_data(key_data: str, value_data: str) -> None:
     storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
-    if os.stat(storage_path).st_size == 0:
+    if not os.path.exists(storage_path):
         with open(storage_path, 'a') as f:
             json.dump({key_data: [value_data]}, f)
     else:
