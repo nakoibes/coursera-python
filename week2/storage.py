@@ -2,30 +2,53 @@ import argparse
 import json
 import os
 import tempfile
+from typing import Optional
+
+
+def handle_command(key_data: Optional[str], value_data: Optional[str]) -> None:
+    if key_data and value_data:
+        write_the_data(key_data, value_data)
+    elif key_data:
+        print(', '.join(get_values(key_data)))
+
+
+def upadate_data(source_data: dict[str:list[str]], key: str, value: str) -> dict[str:list[str]]:
+    if key not in source_data:
+        source_data.update({key: [value]})
+    else:
+        source_data[key].append(value)
+    return source_data
+
+
+def update_storage(data: dict[str:[str]], path: str) -> None:
+    with open(path, 'w') as f:
+        json.dump(data, f)
+
+
+def read_storage(path: str) -> dict[str:[str]]:
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            file_content = f.read()
+            if file_content:
+                f.seek(0)
+                return json.load(f)
+            else:
+                return {}
+    else:
+        return {}
 
 
 def write_the_data(key_data: str, value_data: str) -> None:
-    storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
-    if not os.path.exists(storage_path):
-        with open(storage_path, 'a') as f:
-            json.dump({key_data: [value_data]}, f)
-    else:
-        with open(storage_path, 'r') as f:
-            data = json.load(f)
-            if key_data not in data:
-                data.update({key_data: [value_data]})
-            else:
-                data[key_data].append(value_data)
-
-        with open(storage_path, 'w') as f:
-            json.dump(data, f)
+    storage_path = os.path.join(tempfile.gettempdir(), 'storagee.data')
+    data = read_storage(storage_path)
+    data = upadate_data(data, key_data, value_data)
+    update_storage(data, storage_path)
 
 
 def get_values(key_data: str) -> list[str]:
-    storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
-    with open(storage_path, 'r') as f:
-        data = json.load(f).get(key_data, [])
-    return data
+    storage_path = os.path.join(tempfile.gettempdir(), 'storagee.data')
+    data = read_storage(storage_path)
+    return data.get(key_data, [])
 
 
 def get_data() -> list[str]:
@@ -38,12 +61,8 @@ def get_data() -> list[str]:
 
 def main():
     key_data, value_data = get_data()
-    if key_data and value_data:
-        write_the_data(key_data, value_data)
-    elif key_data:
-        print(', '.join(get_values(key_data)))
-    else:
-        print('No Data')
+    handle_command(key_data, value_data)
+
 
 if __name__ == '__main__':
     main()
