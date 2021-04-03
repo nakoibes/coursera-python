@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
 import csv
 import os
 
 
 class CarBase:
-    def __init__(self, car_type, photo_file_name, brand, carrying):
-        self.car_type = car_type
+    def __init__(self, photo_file_name, brand, carrying):
         self.photo_file_name = photo_file_name
         self.brand = brand
         self.carrying = carrying
@@ -14,8 +14,10 @@ class CarBase:
 
 
 class Car(CarBase):
-    def __init__(self, brand=None, photo_file_name=None, carrying=None, passenger_seats_count=None, car_type='car'):
-        super(Car, self).__init__(car_type, photo_file_name, brand, carrying)
+    car_type = 'car'
+
+    def __init__(self, brand=None, photo_file_name=None, carrying=None, passenger_seats_count=None):
+        super(Car, self).__init__(photo_file_name, brand, carrying)
         self.passenger_seats_count = passenger_seats_count
 
     def __str__(self):
@@ -23,8 +25,10 @@ class Car(CarBase):
 
 
 class Truck(CarBase):
-    def __init__(self, brand=None, photo_file_name=None, carrying=None, body_whl='0x0x0', car_type='truck'):
-        super(Truck, self).__init__(car_type, photo_file_name, brand, carrying)
+    car_type = 'truck'
+
+    def __init__(self, brand=None, photo_file_name=None, carrying=None, body_whl='0.0x0.0x0.0'):
+        super(Truck, self).__init__(photo_file_name, brand, carrying)
         try:
             self.body_length, self.body_width, self.body_height = self._initialize(body_whl)
         except:
@@ -44,103 +48,83 @@ class Truck(CarBase):
 
 
 class SpecMachine(CarBase):
-    def __init__(self, brand=None, photo_file_name=None, carrying=None, extra=None, car_type='spec_machine'):
-        super(SpecMachine, self).__init__(car_type, photo_file_name, brand, carrying)
+    car_type = 'spec_machine'
+
+    def __init__(self, brand=None, photo_file_name=None, carrying=None, extra=None):
+        super(SpecMachine, self).__init__(photo_file_name, brand, carrying)
         self.extra = extra
 
     def __str__(self):
         return ' '.join([self.car_type, self.photo_file_name, self.brand, self.carrying, self.extra])
 
 
-class Validation():
-    def __init__(self,car_dict):
-        self.car_dict = car_dict
-    def _validation(self, car_list):
+class Construct():
+    def __init__(self, car_list):
+        self.car_list = car_list
+
+    def preconstruct(self):
         car_data = []
         res = []
-        for car in car_list:
-            if (car != []) and self._isvalid(car):
+        for car in self.car_list:
+            car = self._validation(car)
+            if bool(car):
                 res = self._construct(car)
-            car_data.append(res)
+                if res != None:
+                    car_data.append(res)
         return car_data
 
     @staticmethod
-    def _isvalid(row):
-        if row[0] == '':
-            return False
-        return True
+    def _validation(car_dict):
+        if ((car_dict['car_type'] != '') and
+                (car_dict['photo_file_name'] != 0) and
+                (car_dict['brand'] != 0) and
+                (car_dict['carrying'] != 0) and
+                (os.path.splitext(car_dict['photo_file_name'])[1] in ['.jpg', '.jpeg', '.png', '.gif'])):
+            try:
+                float(car_dict['carrying'])
+                return car_dict
+            except:
+                pass
+        return {}
+
+    @staticmethod
+    def _construct(row):
+        if row['car_type'] == 'car' and row['passenger_seats_count'] != '':
+            return Car(row['brand'], row['photo_file_name'], row['carrying'], row['passenger_seats_count'])
+        elif row['car_type'] == 'truck':
+            return Truck(row['brand'], row['photo_file_name'], row['carrying'], row['body_whl'])
+        elif row['car_type'] == 'spec_machine' and row['extra'] != '':
+            return SpecMachine(row['brand'], row['photo_file_name'], row['carrying'], row['extra'])
+        else:
+            return None
 
 
 class ReadFile():
-    def __init__(self,path):
+    def __init__(self, path):
         self.path = path
-    def _read(self):
+
+    def read(self):
         raw_data = []
-        with open('cars.csv') as csvfile:
+        with open('cars.csv', errors="ignore") as csvfile:
             reader = csv.DictReader(csvfile, delimiter=';')
             for row in reader:
                 raw_data.append(row)
         return raw_data
 
 
-class Constructor():
-    def __init__(self):
-        pass
-
-
-class DoEverything:
-    def __init__(self, path):
-        self.path = path
-
-    def do(self):
-        car_list = self._read()
-        car_data = self._validation(car_list)
-        return car_data
-
-    def _validation(self, car_list):
-        car_data = []
-        res = []
-        for car in car_list:
-            if (car != []) and self._isvalid(car):
-                res = self._construct(car)
-            car_data.append(res)
-        return car_data
-
-    @staticmethod
-    def _construct(row):
-        if row[0] == 'car':
-            return Car(row[1], row[3], row[5], row[2])
-        elif row[0] == 'truck':
-            return Truck(row[1], row[3], row[5], row[4])
-        else:
-            return SpecMachine(row[1], row[3], row[5], row[6])
-
-    @staticmethod
-    def _isvalid(row):
-        if row[0] == '':
-            return False
-        return True
-
-    def _read(self):
-        raw_data = []
-        with open(self.path) as csv_fd:
-            reader = csv.reader(csv_fd, delimiter=';')
-            next(reader)
-            for car in reader:
-                raw_data.append(car)
-        return raw_data
-
-
+'''
 def get_car_list(path):
     result = DoEverything(path).do()
     return result
+'''
 
 
 def main():
-    raw_data = ReadFile('cars.csv')._read()
-    good_data = Validation(raw_data)._validation()
-    #result = get_car_list('cars.csv')
-    #print(result)
+    raw_data = ReadFile('cars.csv').read()
+    result = Construct(raw_data).preconstruct()
+    # result = get_car_list('cars.csv')
+    for car in result:
+        print(car)
 
 
 if __name__ == '__main__':
