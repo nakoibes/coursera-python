@@ -52,6 +52,42 @@ class SpecMachine(CarBase):
         return ' '.join([self.car_type, self.photo_file_name, self.brand, self.carrying, self.extra])
 
 
+class Validation():
+    def __init__(self,car_dict):
+        self.car_dict = car_dict
+    def _validation(self, car_list):
+        car_data = []
+        res = []
+        for car in car_list:
+            if (car != []) and self._isvalid(car):
+                res = self._construct(car)
+            car_data.append(res)
+        return car_data
+
+    @staticmethod
+    def _isvalid(row):
+        if row[0] == '':
+            return False
+        return True
+
+
+class ReadFile():
+    def __init__(self,path):
+        self.path = path
+    def _read(self):
+        raw_data = []
+        with open('cars.csv') as csvfile:
+            reader = csv.DictReader(csvfile, delimiter=';')
+            for row in reader:
+                raw_data.append(row)
+        return raw_data
+
+
+class Constructor():
+    def __init__(self):
+        pass
+
+
 class DoEverything:
     def __init__(self, path):
         self.path = path
@@ -101,8 +137,10 @@ def get_car_list(path):
 
 
 def main():
-    result = get_car_list('cars.csv')
-    print(result)
+    raw_data = ReadFile('cars.csv')._read()
+    good_data = Validation(raw_data)._validation()
+    #result = get_car_list('cars.csv')
+    #print(result)
 
 
 if __name__ == '__main__':
