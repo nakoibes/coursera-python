@@ -28,7 +28,7 @@ class Truck(CarBase):
         try:
             self.body_length, self.body_width, self.body_height = self._initialize(body_whl)
         except:
-            self.body_length, self.body_width, self.body_height = '0', '0', '0'
+            self.body_length, self.body_width, self.body_height = '0.0', '0.0', '0.0'
 
     def get_body_volume(self):
         return int(self.body_length) * int(self.body_width) * int(self.body_height)
