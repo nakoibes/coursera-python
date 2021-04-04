@@ -65,26 +65,25 @@ class Pasha:
 
     def smotryashii(self):
         self.data = self._get_data(self.path)
-        return Construct(self.data).preconstruct()
+        return Construct(self.data)
 
-    def _get_data(self,path):
+    def _get_data(self, path):
         return ReadFile.read(path)
 
 
 class Construct:
     def __init__(self, car_list):
-        self.car_list = car_list
+        self.result_list = []
+        for item in car_list:
+            car = self.preconstruct(item)
+            if car != None:
+                self.result_list.append(car)
 
-    def preconstruct(self):
-        car_data = []
-        res = []
-        for car in self.car_list:
-            car = self._validation(car)
-            if bool(car):
-                res = self._construct(car)
-                if res != None:
-                    car_data.append(res)
-        return car_data
+    def preconstruct(self, car):
+        car = self._validation(car)
+        if bool(car):
+            res = self._construct(car)
+            return res
 
     @staticmethod
     def _validation(car_dict):
@@ -92,7 +91,9 @@ class Construct:
                 (car_dict['photo_file_name'] != 0) and
                 (car_dict['brand'] != 0) and
                 (car_dict['carrying'] != 0) and
-                (os.path.splitext(car_dict['photo_file_name'])[1] in ['.jpg', '.jpeg', '.png', '.gif'])):
+                (os.path.splitext(car_dict['photo_file_name'])[1] in ['.jpg', '.jpeg', '.png', '.gif']) and (
+                        (car_dict['passenger_seats_count'] != '') or (car_dict['extra'] != '') or (
+                        car_dict['car_type'] == 'truck'))):
             try:
                 float(car_dict['carrying'])
                 return car_dict
@@ -102,14 +103,12 @@ class Construct:
 
     @staticmethod
     def _construct(row):
-        if row['car_type'] == 'car' and row['passenger_seats_count'] != '':
+        if row['car_type'] == 'car':
             return Car(row['brand'], row['photo_file_name'], row['carrying'], row['passenger_seats_count'])
         elif row['car_type'] == 'truck':
             return Truck(row['brand'], row['photo_file_name'], row['carrying'], row['body_whl'])
-        elif row['car_type'] == 'spec_machine' and row['extra'] != '':
-            return SpecMachine(row['brand'], row['photo_file_name'], row['carrying'], row['extra'])
         else:
-            return None
+            return SpecMachine(row['brand'], row['photo_file_name'], row['carrying'], row['extra'])
 
 
 class ReadFile:
@@ -133,10 +132,10 @@ def get_car_list(path):
 
 
 def main():
-    #raw_data = ReadFile('cars.csv').read()
+    # raw_data = ReadFile('cars.csv').read()
     result = Pasha('cars.csv').smotryashii()
     # result = get_car_list('cars.csv')
-    for car in result:
+    for car in result.result_list:
         print(car)
 
 
