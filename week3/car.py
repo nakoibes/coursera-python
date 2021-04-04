@@ -35,7 +35,7 @@ class Truck(CarBase):
             self.body_length, self.body_width, self.body_height = '0.0', '0.0', '0.0'
 
     def get_body_volume(self):
-        return int(self.body_length) * int(self.body_width) * int(self.body_height)
+        return float(self.body_length) * float(self.body_width) * float(self.body_height)
 
     @staticmethod
     def _initialize(body_whl):
@@ -58,7 +58,20 @@ class SpecMachine(CarBase):
         return ' '.join([self.car_type, self.photo_file_name, self.brand, self.carrying, self.extra])
 
 
-class Construct():
+class Pasha:
+    def __init__(self, path):
+        self.path = path
+        self.data = []
+
+    def smotryashii(self):
+        self.data = self._get_data(self.path)
+        return Construct(self.data).preconstruct()
+
+    def _get_data(self,path):
+        return ReadFile.read(path)
+
+
+class Construct:
     def __init__(self, car_list):
         self.car_list = car_list
 
@@ -99,7 +112,7 @@ class Construct():
             return None
 
 
-class ReadFile():
+class ReadFile:
     def __init__(self, path):
         self.path = path
 
@@ -120,8 +133,8 @@ def get_car_list(path):
 
 
 def main():
-    raw_data = ReadFile('cars.csv').read()
-    result = Construct(raw_data).preconstruct()
+    #raw_data = ReadFile('cars.csv').read()
+    result = Pasha('cars.csv').smotryashii()
     # result = get_car_list('cars.csv')
     for car in result:
         print(car)
