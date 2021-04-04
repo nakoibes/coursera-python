@@ -35,6 +35,9 @@ class Truck(CarBase):
             self.body_length, self.body_width, self.body_height = '0.0', '0.0', '0.0'
 
     def get_body_volume(self):
+        return self._extract_body_volume_from_string()
+
+    def _extract_body_volume_from_string(self):
         return float(self.body_length) * float(self.body_width) * float(self.body_height)
 
     @staticmethod
@@ -58,19 +61,61 @@ class SpecMachine(CarBase):
         return ' '.join([self.car_type, self.photo_file_name, self.brand, self.carrying, self.extra])
 
 
-class Pasha:
+class FileSystemCarAdapter():
+    pass
+
+
+class CSVCarAdapter(FileSystemCarAdapter):
     def __init__(self, path):
-        self.path = path
-        self.data = []
+        pass
 
-    def smotryashii(self):
-        self.data = self._get_data(self.path)
-        return Construct(self.data)
+    def get_cars(self, path):
+        result = []
+        raw_data = FileReader(path).read()
+        for car_dict in raw_data:
+            car_bool = CSVCarValidator(car_dict).validate()
+            if car_bool:
+                result.append(CSVCarConstructor(car_dict).construct())
 
-    def _get_data(self, path):
-        return ReadFile.read(path)
+        # self.data = self._get_data(path)
+        # return Construct(self.data)
 
+    # def _get_data(self, path):
+    # return ReadFile.read(path)
+class CSVCarConstructor:
+    def __init__(self,car_dict):
+        self.car_dict = car_dict
+    def construct(self):
+        if self.car_dict['car_type'] == 'car':
+            return Car(self.car_dict['brand'], self.car_dict['photo_file_name'], self.car_dict['carrying'], self.car_dict['passenger_seats_count'])
+        elif self.car_dict['car_type'] == 'truck':
+            return Truck(self.car_dict['brand'], self.car_dict['photo_file_name'], self.car_dict['carrying'], self.car_dict['body_whl'])
+        else:
+            return SpecMachine(self.car_dict['brand'], self.car_dict['photo_file_name'], self.car_dict['carrying'], self.car_dict['extra'])
 
+class CSVCarValidator:
+    def __init__(self, car_dict):
+        self.car_dict = car_dict
+
+    def validate(self):
+        pass
+
+    def validate_file_ext(self):
+        pass
+
+    def validate_carrying(self):
+        pass
+
+    def validate_car_type(self):
+        pass
+
+    def validate_brand(self):
+        pass
+
+    def validate_seats_count(self):
+        pass
+
+'''
 class Construct:
     def __init__(self, car_list):
         self.result_list = []
@@ -82,8 +127,7 @@ class Construct:
     def preconstruct(self, car):
         car = self._validation(car)
         if bool(car):
-            res = self._construct(car)
-            return res
+            return self._construct(car)
 
     @staticmethod
     def _validation(car_dict):
@@ -110,8 +154,8 @@ class Construct:
         else:
             return SpecMachine(row['brand'], row['photo_file_name'], row['carrying'], row['extra'])
 
-
-class ReadFile:
+'''
+class FileReader:
     def __init__(self, path):
         self.path = path
 
@@ -133,7 +177,7 @@ def get_car_list(path):
 
 def main():
     # raw_data = ReadFile('cars.csv').read()
-    result = Pasha('cars.csv').smotryashii()
+    #result = CSVCarAdapter('cars.csv').smotryashii()
     # result = get_car_list('cars.csv')
     for car in result.result_list:
         print(car)
