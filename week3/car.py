@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import csv
 import os
+from abc import abstractmethod, ABCMeta
 
 
 class CarBase:
@@ -16,7 +17,7 @@ class CarBase:
 class Car(CarBase):
     car_type = 'car'
 
-    def __init__(self, brand=None, photo_file_name=None, carrying=None, passenger_seats_count=None):
+    def __init__(self, brand, photo_file_name, carrying, passenger_seats_count):
         super(Car, self).__init__(photo_file_name, brand, carrying)
         self.passenger_seats_count = passenger_seats_count
 
@@ -28,49 +29,55 @@ class Car(CarBase):
 class Truck(CarBase):
     car_type = 'truck'
 
-    def __init__(self, brand=None, photo_file_name=None, carrying=None, body_whl='0.0x0.0x0.0'):
+    def __init__(self, brand, photo_file_name, carrying, body_whl):
         super(Truck, self).__init__(photo_file_name, brand, carrying)
-        try:
-            self.body_length, self.body_width, self.body_height = self._initialize(body_whl)
-        except:
-            self.body_length, self.body_width, self.body_height = '0.0', '0.0', '0.0'
+        self.body_whl = body_whl
+        self.body_length = 0.0
+        self.body_width = 0.0
+        self.body_height = 0.0
+        self._extract_body_volume_from_string()
 
     def get_body_volume(self):
-        return self._extract_body_volume_from_string()
+        return self.body_width * self.body_length * self.body_height
 
     def _extract_body_volume_from_string(self):
-        return float(self.body_length) * float(self.body_width) * float(self.body_height)
-
-    @staticmethod
-    def _initialize(body_whl):
-        return body_whl.split('x')
+        try:
+            self.body_length, self.body_width, self.body_height = self.body_whl.split('x')
+        except:
+            pass
 
     def __str__(self):
         return ' '.join(
-            [self.car_type, self.photo_file_name, self.brand, str(self.carrying), self.body_length, self.body_width,
-             self.body_height])
+            [self.car_type, self.photo_file_name, self.brand, str(self.carrying), str(self.body_length),
+             str(self.body_width),
+             str(self.body_height)])
 
 
 class SpecMachine(CarBase):
     car_type = 'spec_machine'
 
-    def __init__(self, brand=None, photo_file_name=None, carrying=None, extra=None):
+    def __init__(self, brand, photo_file_name, carrying, extra):
         super(SpecMachine, self).__init__(photo_file_name, brand, carrying)
         self.extra = extra
 
     def __str__(self):
-        return ' '.join([self.car_type, self.photo_file_name, self.brand, self.carrying, self.extra])
+        return ' '.join([self.car_type, self.photo_file_name, self.brand, str(self.carrying), self.extra])
 
 
-class FileSystemCarAdapter():
-    pass
+class FileSystemCarAdapter(metaclass=ABCMeta):
+    @abstractmethod
+    def get_cars(self, path):
+        raise NotImplementedError
 
 
 class CSVCarAdapter(FileSystemCarAdapter):
-    @staticmethod
-    def get_cars(path):
+    def __init__(self, filename):
+        self.filename = filename
+
+    def get_cars(self, path):
         result = []
-        raw_data = FileReader(path).read()
+        final_path = path + '/' + self.filename
+        raw_data = FileReader(final_path).read()
         for car_dict in raw_data:
             car_bool = CSVCarValidator(car_dict).validate()
             if car_bool:
@@ -98,59 +105,49 @@ class CSVCarConstructor:
 class CSVCarValidator:
     def __init__(self, car_dict):
         self.car_dict = car_dict
-        self._allowed_car_types = ['.jpg', '.jpeg', '.png', '.gif']
+        self._allowed_photo_types = ['.jpg', '.jpeg', '.png', '.gif']
+        self._allowed_car_types = ['car', 'truck', 'spec_machine']
 
     def validate(self):
-        if not self.validate_brand(self.car_dict['brand']):
+        if not self.validate_brand():
             return False
-        if not self.validate_file_ext(self.car_dict['photo_file_name']):
+        if not self.validate_file_ext():
             return False
-        if not self.validate_carrying(self.car_dict['carrying']):
+        if not self.validate_carrying():
             return False
-        if not self.validate_car_type(self.car_dict['car_type']):
+        if not self.validate_car_type():
             return False
         if not self.validate_extra_property():
             return False
         return True
 
-    def validate_file_ext(self, photo_file_name):
-        if not os.path.splitext(photo_file_name)[1] in self._allowed_car_types:
+    def validate_file_ext(self):
+        if not os.path.splitext(self.car_dict['photo_file_name'])[1] in self._allowed_photo_types:
             return False
         return True
 
-    @staticmethod
-    def validate_carrying(carrying):
-        if carrying == '':
+    def validate_carrying(self):
+        if self.car_dict['carrying'] == '':
             return False
         try:
-            float(carrying)
+            float(self.car_dict['carrying'])
             return True
         except:
             return False
 
-    @staticmethod
-    def validate_car_type(car_type):
-        if car_type == 'car' or car_type == 'truck' or car_type == 'spec_machine':
-            return True
-        return False
+    def validate_car_type(self):
+        return self.car_dict['car_type'] in self._allowed_car_types
 
-    @staticmethod
-    def validate_brand(brand):
-        if brand == '':
-            return False
-        return True
+    def validate_brand(self):
+        return bool(self.car_dict['brand'])
 
     def validate_extra_property(self):
-        if self.car_dict['passenger_seats_count'] == '' and self.car_dict['car_type'] != 'truck' and \
-                self.car_dict['extra'] == '':
-            return False
-        if self.car_dict['passenger_seats_count'] != '':
-            try:
-                int(self.car_dict['passenger_seats_count'])
-                return True
-            except:
-                return False
-        return True
+        if self.car_dict['car_type'] == 'car':
+            return self.car_dict['passenger_seats_count'].isdigit()
+        elif self.car_dict['car_type'] == 'spec_machine':
+            return bool(self.car_dict['extra'])
+        else:
+            return True
 
 
 class FileReader:
@@ -159,15 +156,15 @@ class FileReader:
 
     def read(self):
         raw_data = []
-        with open(self.path,errors="ignore") as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=';')
+        with open(self.path) as csvfile:
+            reader = csv.DictReader(csvfile, delimiter=',')
             for row in reader:
                 raw_data.append(row)
         return raw_data
 
 
-def get_car_list(path):
-    result = CSVCarAdapter().get_cars(path)
+def get_car_list(filename):
+    result = CSVCarAdapter(filename).get_cars(os.getcwd())
     return result
 
 
