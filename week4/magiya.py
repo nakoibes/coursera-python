@@ -7,6 +7,7 @@ class File:
 
     def __init__(self, filename):
         self.filename = filename
+        self.content = []
         self.counter = -1
         if not os.path.exists(self.filename):
             with open(self.filename, 'w'):
@@ -37,17 +38,15 @@ class File:
         return self
 
     def file_list(self):
-        a = []
         with open(self.filename, 'r') as f:
             for line in f.readlines():
-                a.append(line)
-        return a
+                self.content.append(line)
 
     def __next__(self):
         file_list = self.file_list()
         self.counter += 1
-        if self.counter < len(file_list):
-            return file_list[self.counter]
+        if self.counter < len(self.content):
+            return self.content[self.counter]
         else:
             raise StopIteration
 
