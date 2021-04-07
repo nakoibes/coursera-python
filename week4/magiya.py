@@ -43,7 +43,6 @@ class File:
                 self.content.append(line)
 
     def __next__(self):
-        file_list = self.file_list()
         self.counter += 1
         if self.counter < len(self.content):
             return self.content[self.counter]
