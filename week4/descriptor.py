@@ -1,10 +1,12 @@
 class Value:
+    def __init__(self):
+        self.amount = 0
 
     def __get__(self, instance, owner):
         return int(self.amount)
 
     def __set__(self, instance, value):
-        self.amount = value * (1-instance.commission)
+        self.amount = value * (1 - instance.commission)
 
 
 class Account:
@@ -14,6 +16,6 @@ class Account:
         self.commission = commission
 
 
-# new_account = Account(0.1)
+new_account = Account(0.1)
 # new_account.amount = 100
-# print(new_account.amount)
+print(new_account.amount)
