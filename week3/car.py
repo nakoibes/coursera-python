@@ -8,7 +8,7 @@ class CarBase:
     def __init__(self, photo_file_name, brand, carrying):
         self.photo_file_name = photo_file_name
         self.brand = brand
-        self.carrying = carrying
+        self.carrying = float(carrying)
 
     def get_photo_file_ext(self):
         return os.path.splitext(self.photo_file_name)[1]
@@ -19,11 +19,7 @@ class Car(CarBase):
 
     def __init__(self, brand, photo_file_name, carrying, passenger_seats_count):
         super(Car, self).__init__(photo_file_name, brand, carrying)
-        self.passenger_seats_count = passenger_seats_count
-
-    def __str__(self):
-        return ' '.join(
-            [self.car_type, self.photo_file_name, self.brand, str(self.carrying), str(self.passenger_seats_count)])
+        self.passenger_seats_count = int(passenger_seats_count)
 
 
 class Truck(CarBase):
@@ -42,15 +38,9 @@ class Truck(CarBase):
 
     def _extract_body_volume_from_string(self):
         try:
-            self.body_length, self.body_width, self.body_height = self.body_whl.split('x')
+            self.body_length, self.body_width, self.body_height = map(float, self.body_whl.split('x'))
         except:
             pass
-
-    def __str__(self):
-        return ' '.join(
-            [self.car_type, self.photo_file_name, self.brand, str(self.carrying), str(self.body_length),
-             str(self.body_width),
-             str(self.body_height)])
 
 
 class SpecMachine(CarBase):
@@ -60,9 +50,6 @@ class SpecMachine(CarBase):
         super(SpecMachine, self).__init__(photo_file_name, brand, carrying)
         self.extra = extra
 
-    def __str__(self):
-        return ' '.join([self.car_type, self.photo_file_name, self.brand, str(self.carrying), self.extra])
-
 
 class FileSystemCarAdapter(metaclass=ABCMeta):
     @abstractmethod
@@ -71,13 +58,14 @@ class FileSystemCarAdapter(metaclass=ABCMeta):
 
 
 class CSVCarAdapter(FileSystemCarAdapter):
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self):
+        #self.filename = filename
+        pass
 
     def get_cars(self, path):
         result = []
-        final_path = path + '/' + self.filename
-        raw_data = FileReader(final_path).read()
+        #final_path = path + '/' + self.filename
+        raw_data = FileReader(path).read()
         for car_dict in raw_data:
             car_bool = CSVCarValidator(car_dict).validate()
             if car_bool:
@@ -156,20 +144,23 @@ class FileReader:
 
     def read(self):
         raw_data = []
-        with open(self.path) as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=',')
-            for row in reader:
-                raw_data.append(row)
+        try:
+            with open(self.path) as csvfile:
+                reader = csv.DictReader(csvfile, delimiter=';')
+                for row in reader:
+                    raw_data.append(row)
+        except:
+            return []
         return raw_data
 
 
 def get_car_list(filename):
-    result = CSVCarAdapter(filename).get_cars(os.getcwd())
+    result = CSVCarAdapter().get_cars(filename)
     return result
 
 
 def main():
-    result = get_car_list('cars.csv')
+    result = get_car_list('coursera_week3_cars.csv')
     for car in result:
         print(car)
 
