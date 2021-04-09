@@ -12,6 +12,7 @@ class File:
         if not os.path.exists(self.filename):
             with open(self.filename, 'w'):
                 pass
+        self.file_list()
 
     def read(self):
         with open(self.filename, 'r') as f:
@@ -25,8 +26,17 @@ class File:
         with open(self.filename, 'a') as f:
             f.write(text)
 
+    @staticmethod
+    def get_storage_path(first, second): ### эта вся хуйня чтобы уникальное название файла сделать
+        first = first.split('/')[-1]
+        first = os.path.splitext(first)[0]
+        second = second.split('/')[-1]
+        second = os.path.splitext(second)[0]
+        return os.path.join(tempfile.gettempdir(), 'result' + first + second + '.txt')
+
     def __add__(self, other):
-        result = File(self.storage_path)
+        storage_path = self.get_storage_path(self.filename, other.filename)
+        result = File(storage_path)
         result.write(self.read())
         result.writea(other.read())
         return result
@@ -47,5 +57,7 @@ class File:
         if self.counter < len(self.content):
             return self.content[self.counter]
         else:
+            self.counter = -1
             raise StopIteration
+
 
