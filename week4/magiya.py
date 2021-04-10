@@ -7,13 +7,13 @@ class File:
 
     def __init__(self, filename):
         self.filename = filename
-        self.content = []
-        self.counter = -1
+        self.current_position = 0
         if not os.path.exists(self.filename):
             with open(self.filename, 'w'):
                 pass
-        self.file_list()
-
+        with open(self.filename) as f:
+            text = f.readlines()
+        self.size = len(text)
     def read(self):
         with open(self.filename, 'r') as f:
             return f.read()
@@ -47,17 +47,21 @@ class File:
     def __iter__(self):
         return self
 
-    def file_list(self):
-        with open(self.filename, 'r') as f:
-            for line in f.readlines():
-                self.content.append(line)
-
     def __next__(self):
-        self.counter += 1
-        if self.counter < len(self.content):
-            return self.content[self.counter]
-        else:
-            self.counter = -1
-            raise StopIteration
+        with open(self.filename,'r') as f:
+            f.seek(self.current_position)
+            line = f.readline()
+            if not line:
+                self.current_position = 0
+                raise StopIteration
+            self.current_position = f.tell()
+            return line
 
 
+
+#
+# obj = File('1.txt')
+#
+# for i in obj:
+#     print(i,end='')
+#
