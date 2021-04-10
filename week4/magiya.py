@@ -22,10 +22,6 @@ class File:
         with open(self.filename, 'w') as f:
             f.write(text)
 
-    def writea(self, text):
-        with open(self.filename, 'a') as f:
-            f.write(text)
-
     @staticmethod
     def get_storage_path(first, second): ### эта вся хуйня чтобы уникальное название файла сделать
         first = first.split('/')[-1]
@@ -37,8 +33,7 @@ class File:
     def __add__(self, other):
         storage_path = self.get_storage_path(self.filename, other.filename)
         result = File(storage_path)
-        result.write(self.read())
-        result.writea(other.read())
+        result.write(self.read() + other.read())
         return result
 
     def __str__(self):
@@ -58,10 +53,3 @@ class File:
             return line
 
 
-
-#
-# obj = File('1.txt')
-#
-# for i in obj:
-#     print(i,end='')
-#
