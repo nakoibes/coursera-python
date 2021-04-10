@@ -58,14 +58,13 @@ class FileSystemCarAdapter(metaclass=ABCMeta):
 
 
 class CSVCarAdapter(FileSystemCarAdapter):
-    def __init__(self):
-        #self.filename = filename
-        pass
+    def __init__(self, filename):
+        self.filename = filename
 
     def get_cars(self, path):
         result = []
-        #final_path = path + '/' + self.filename
-        raw_data = FileReader(path).read()
+        final_path = path + '/' + self.filename
+        raw_data = FileReader(final_path).read()
         for car_dict in raw_data:
             car_bool = CSVCarValidator(car_dict).validate()
             if car_bool:
@@ -155,7 +154,7 @@ class FileReader:
 
 
 def get_car_list(filename):
-    result = CSVCarAdapter().get_cars(filename)
+    result = CSVCarAdapter(filename).get_cars(os.getcwd())
     return result
 
 
