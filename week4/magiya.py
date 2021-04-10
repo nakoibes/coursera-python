@@ -9,11 +9,14 @@ class File:
         self.filename = filename
         self.current_position = 0
         if not os.path.exists(self.filename):
-            with open(self.filename, 'w'):
-                pass
-        with open(self.filename) as f:
-            text = f.readlines()
-        self.size = len(text)
+            self._create_if_not_exsits()
+
+    def _create_if_not_exsits(self):
+        with open(self.filename, 'w'):
+            pass
+
+
+
     def read(self):
         with open(self.filename, 'r') as f:
             return f.read()
@@ -43,7 +46,7 @@ class File:
         return self
 
     def __next__(self):
-        with open(self.filename,'r') as f:
+        with open(self.filename, 'r') as f:
             f.seek(self.current_position)
             line = f.readline()
             if not line:
