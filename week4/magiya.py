@@ -8,14 +8,16 @@ class File:
     def __init__(self, filename):
         self.filename = filename
         self.current_position = 0
-        if not os.path.exists(self.filename):
+        if not self.exists:
             self._create_if_not_exsits()
+
+    @property
+    def exists(self):
+        return os.path.exists(self.filename)
 
     def _create_if_not_exsits(self):
         with open(self.filename, 'w'):
             pass
-
-
 
     def read(self):
         with open(self.filename, 'r') as f:
@@ -26,7 +28,7 @@ class File:
             f.write(text)
 
     @staticmethod
-    def get_storage_path(first, second): ### эта вся хуйня чтобы уникальное название файла сделать
+    def get_storage_path(first, second):
         first = first.split('/')[-1]
         first = os.path.splitext(first)[0]
         second = second.split('/')[-1]
@@ -54,5 +56,3 @@ class File:
                 raise StopIteration
             self.current_position = f.tell()
             return line
-
-
