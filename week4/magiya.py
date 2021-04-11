@@ -8,16 +8,16 @@ class File:
     def __init__(self, filename):
         self.filename = filename
         self.current_position = 0
-        if not self.exists:
-            self._create_if_not_exsits()
+        self._create_if_not_exsits()
 
     @property
     def exists(self):
         return os.path.exists(self.filename)
 
     def _create_if_not_exsits(self):
-        with open(self.filename, 'w'):
-            pass
+        if not self.exists:
+            with open(self.filename, 'w'):
+                pass
 
     def read(self):
         with open(self.filename, 'r') as f:
