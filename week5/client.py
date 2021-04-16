@@ -25,9 +25,7 @@ class Client:
         data = self._read()
         if data != 'ok\n\n':
             raise ClientError
-        #     return
-        # else:
-        #     raise ClientError
+
 
     @staticmethod
     def _validate(data_list):
@@ -55,7 +53,6 @@ class Client:
         return {}
 
     def get(self, name):
-        # try:
         self.sock.send(bytes(f'get {name}\n', encoding='utf-8'))
         data = self._read()
         if data == 'ok\n\n':
@@ -63,6 +60,3 @@ class Client:
         else:
             result = self._convert(data)
             return result
-
-        # except ClientError as err:
-        #     print(err)
