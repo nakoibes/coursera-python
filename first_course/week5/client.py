@@ -63,16 +63,6 @@ class Deserializer:
         return data_list
 
 
-class Validator:
-    def __init__(self, data_list):
-        self.data_list = data_list
-
-    def validate(self):
-        if len(self.data_list[1].split()) < 3:
-            raise ClientError
-        return True
-
-
 class MetricConstructor:
     def __init__(self, data_list):
         self.data_list = data_list[1:]
