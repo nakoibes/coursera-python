@@ -8,54 +8,85 @@ class ClientError(Exception):
 
 class Client:
     def __init__(self, addr, port, timeout=None):
+        self._transport = Transport(addr, port, timeout)
+
+    def get(self, name: str): #-> dict[str, list[tuple[int, float]]]: Закоментил чтоб в курсеру сдать
+        response = self._transport.perform_request('get', name)
+        status = response[0]
+        if status != 'ok':
+            raise ClientError('bad response status', ','.join(response[1::]))
+        data_dict = MetricConstructor(response).construct()
+        return data_dict
+
+    def put(self, name: str, value: float, timestamp: int = None) -> None:
+        timestamp = timestamp or int(time.time())
+        response = self._transport.perform_request('put', name, value, timestamp)
+        status = response[0]
+        if status != 'ok':
+            raise ClientError('bad response status', ','.join(response[1::]))
+
+
+class Transport:
+    def __init__(self, addr, port, timeout):
         self.addr = addr
         self.port = port
+        self.timeout = timeout
         try:
             self.sock = socket.create_connection((addr, port))
         except socket.error as err:
             raise ClientError('Cannont create connection', err) from err
         self.sock.settimeout(timeout)
 
-    def _read(self):
-        return self.sock.recv(1024).decode('utf-8')
+    def read(self):
+        return self.sock.recv(1024)
 
-    def put(self, name, number, timestamp=None):
-        timestamp = timestamp or int(time.time())
-        self.sock.send(bytes(f'put {name} {number} {timestamp}\n', encoding='utf-8'))
-        data = self._read()
-        if data != 'ok\n\n':
-            raise ClientError
+    def perform_request(self, method: str, *args):# -> list[str]:
+        if method == 'put':
+            self.sock.send(bytes(f'put {args[0]} {args[1]} {args[2]}\n', encoding='utf-8'))
+            data_bytes = self.read()
+            data_list = Deserializer().loads(data_bytes)
+            return data_list
+        elif method == 'get':
+            self.sock.send(bytes(f'get {args[0]}\n', encoding='utf-8'))
+            data_bytes = self.read()
+            data_list = Deserializer().loads(data_bytes)
+            return data_list
 
-    @staticmethod
-    def _validate(data_list):
-        if data_list[0] != 'ok':
-            raise ClientError
-        elif len(data_list[1].split()) < 3:
+
+class Deserializer:
+    def __init__(self):
+        self.encoding = 'utf-8'
+        self.delimiter = '\n'
+
+    def loads(self, raw_data: bytes):# -> list[str]:
+        data_list = raw_data.decode(self.encoding).split(self.delimiter)[:-2]
+        return data_list
+
+
+class Validator:
+    def __init__(self,data_list):
+        self.data_list = data_list
+
+    def validate(self):
+        if len(self.data_list[1].split()) < 3:
             raise ClientError
         return True
 
-    def _convert(self, data):
-        data_list = data.split('\n')
-        if self._validate(data_list):
-            data_list = data.split('\n')[1:-2]
-            try:
-                data_dict = {
-                    item[0]: [(int(y[2]), float(y[1])) for y in [x.split() for x in data_list] if y[0] == item[0]]
-                    for item in
-                    [x.split() for x in data_list]}
-                for item in data_dict:
-                    print(data_dict[item])
-                    data_dict[item].sort()
-            except:
-                raise ClientError
-            return data_dict
-        return {}
+class MetricConstructor:
+    def __init__(self, data_list):
+        self.data_list = data_list[1:]
 
-    def get(self, name):
-        self.sock.send(bytes(f'get {name}\n', encoding='utf-8'))
-        data = self._read()
-        if data == 'ok\n\n':
-            return {}
-        else:
-            result = self._convert(data)
-            return result
+
+    def construct(self):# -> tuple[str, dict[str, list[tuple[int, float]]]]:
+        result = {}
+        for item in self.data_list:
+            result.setdefault(item.split()[0],[])
+            try:
+                tup = (int(item.split()[2]),float(item.split()[1]))
+            except:
+                raise ClientError('Cannont create connection')
+            result[item.split()[0]].append(tup)
+            result[item.split()[0]].sort()
+        return result  #че то я пока не понял зачем статус возвращать
+
+
