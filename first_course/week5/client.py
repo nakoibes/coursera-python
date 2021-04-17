@@ -10,7 +10,7 @@ class Client:
     def __init__(self, addr, port, timeout=None):
         self._transport = Transport(addr, port, timeout)
 
-    def get(self, name: str): #-> dict[str, list[tuple[int, float]]]: Закоментил чтоб в курсеру сдать
+    def get(self, name: str):  # -> dict[str, list[tuple[int, float]]]: Закоментил чтоб в курсеру сдать
         response = self._transport.perform_request('get', name)
         status = response[0]
         if status != 'ok':
@@ -40,7 +40,7 @@ class Transport:
     def read(self):
         return self.sock.recv(1024)
 
-    def perform_request(self, method: str, *args):# -> list[str]:
+    def perform_request(self, method: str, *args):  # -> list[str]:
         if method == 'put':
             self.sock.send(bytes(f'put {args[0]} {args[1]} {args[2]}\n', encoding='utf-8'))
             data_bytes = self.read()
@@ -58,13 +58,13 @@ class Deserializer:
         self.encoding = 'utf-8'
         self.delimiter = '\n'
 
-    def loads(self, raw_data: bytes):# -> list[str]:
+    def loads(self, raw_data: bytes):  # -> list[str]:
         data_list = raw_data.decode(self.encoding).split(self.delimiter)[:-2]
         return data_list
 
 
 class Validator:
-    def __init__(self,data_list):
+    def __init__(self, data_list):
         self.data_list = data_list
 
     def validate(self):
@@ -72,21 +72,19 @@ class Validator:
             raise ClientError
         return True
 
+
 class MetricConstructor:
     def __init__(self, data_list):
         self.data_list = data_list[1:]
 
-
-    def construct(self):# -> tuple[str, dict[str, list[tuple[int, float]]]]:
+    def construct(self):  # -> tuple[str, dict[str, list[tuple[int, float]]]]:
         result = {}
         for item in self.data_list:
-            result.setdefault(item.split()[0],[])
+            result.setdefault(item.split()[0], [])
             try:
-                tup = (int(item.split()[2]),float(item.split()[1]))
+                tup = (int(item.split()[2]), float(item.split()[1]))
             except:
                 raise ClientError('Cannont create connection')
             result[item.split()[0]].append(tup)
             result[item.split()[0]].sort()
-        return result  #че то я пока не понял зачем статус возвращать
-
-
+        return result  # че то я пока не понял зачем статус возвращать
