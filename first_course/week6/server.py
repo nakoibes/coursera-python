@@ -1,5 +1,5 @@
 import asyncio
-
+from asyncio import Transport
 
 def run_server(host, port):
     loop = asyncio.get_event_loop()
@@ -23,7 +23,7 @@ def run_server(host, port):
 class ClientServerProtocol(asyncio.Protocol):
     storage = {}
 
-    def connection_made(self, transport) -> None:
+    def connection_made(self, transport: Transport) -> None:
         self.transport = transport
 
     def data_received(self, data: bytes) -> None:
