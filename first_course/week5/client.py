@@ -13,15 +13,15 @@ class Client:
         try:
             self.sock = socket.create_connection((addr, port))
         except socket.error as err:
-            raise ClientError('Cannont create connection', err)
+            raise ClientError('Cannont create connection', err) from err
         self.sock.settimeout(timeout)
 
     def _read(self):
         return self.sock.recv(1024).decode('utf-8')
 
-    def put(self, name, number, timestemp=None):
-        timestemp = timestemp or int(time.time())
-        self.sock.send(bytes(f'put {name} {number} {timestemp}\n', encoding='utf-8'))
+    def put(self, name, number, timestamp=None):
+        timestamp = timestamp or int(time.time())
+        self.sock.send(bytes(f'put {name} {number} {timestamp}\n', encoding='utf-8'))
         data = self._read()
         if data != 'ok\n\n':
             raise ClientError
