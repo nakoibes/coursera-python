@@ -79,7 +79,8 @@ class ResponseConstructor:
                 result.setdefault(metric_name, [])
                 tup = (int(metric_timestamp), float(metric_rate))
                 result[metric_name].append(tup)
-                result[metric_name].sort()
+            for value in result.values():
+                value.sort()
         except:
             raise ValidationError('Bad data')
         return result  # че то я пока не понял зачем статус возвращать
