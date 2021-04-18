@@ -35,6 +35,9 @@ class Client:
         if status != 'ok':
             raise ClientError('bad response status', ','.join(response[1::]))
 
+    def close(self):
+        self._transport.close()
+
 
 class Transport:
     def __init__(self, addr, port, timeout):
@@ -49,13 +52,31 @@ class Transport:
         self.sock.settimeout(timeout)
 
     def read(self):
-        return self.sock.recv(1024)
+        data = b''
+        try:
+            while not data.endswith(b'\n\n'):
+                data += self.sock.recv(1024)
+            return data
+        except socket.error as err:
+            ClientError('Error.Cannot close connection', err)
+
+    def send(self, data):
+        try:
+            self.sock.send(data)
+        except socket.error as err:
+            raise ClientError("Error sending data to server", err)
 
     def perform_request(self, method: str, *args) -> list[str]:
-        self.sock.send(bytes(f'{method} {" ".join(args)}\n', encoding='utf-8'))
+        self.send(bytes(f'{method} {" ".join(args)}\n', encoding='utf-8'))
         data_bytes = self.read()
         data_list = self.deserializer.loads(data_bytes)
         return data_list
+
+    def close(self):
+        try:
+            self.sock.close()
+        except socket.error as err:
+            ClientError('Error.Cannot close connection', err)
 
 
 class Deserializer:
