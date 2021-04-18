@@ -77,8 +77,7 @@ class ResponseConstructor:
             for item in self.data_list:
                 metric_name, metric_rate, metric_timestamp = item.split()
                 result.setdefault(metric_name, [])
-                tup = (int(metric_timestamp), float(metric_rate))
-                result[metric_name].append(tup)
+                result[metric_name].append((int(metric_timestamp), float(metric_rate)))
             for value in result.values():
                 value.sort()
         except:
