@@ -41,6 +41,7 @@ class Transport:
         self.addr = addr
         self.port = port
         self.timeout = timeout
+        self.deserializer = Deserializer()
         try:
             self.sock = socket.create_connection((addr, port))
         except socket.error as err:
@@ -53,7 +54,7 @@ class Transport:
     def perform_request(self, method: str, *args):  # -> list[str]:
         self.sock.send(bytes(f'{method} {" ".join(args)}\n', encoding='utf-8'))
         data_bytes = self.read()
-        data_list = Deserializer().loads(data_bytes)
+        data_list = self.deserializer.loads(data_bytes)
         return data_list
 
 
@@ -62,7 +63,7 @@ class Deserializer:
         self.encoding = 'utf-8'
         self.delimiter = '\n'
 
-    def loads(self, raw_data: bytes):  # -> list[str]:
+    def loads(self, raw_data: bytes) -> list[str]:
         data_list = raw_data.decode(self.encoding).split(self.delimiter)[:-2]
         return data_list
 
@@ -71,7 +72,7 @@ class ResponseConstructor:
     def __init__(self, data_list):
         self.data_list = data_list[1:]
 
-    def construct(self):  # -> tuple[str, dict[str, list[tuple[int, float]]]]:
+    def construct(self) -> dict[str, list[tuple[int, float]]]:
         result = {}
         try:
             for item in self.data_list:
@@ -82,4 +83,4 @@ class ResponseConstructor:
                 value.sort()
         except:
             raise ValidationError('Bad data')
-        return result  # че то я пока не понял зачем статус возвращать
+        return result
