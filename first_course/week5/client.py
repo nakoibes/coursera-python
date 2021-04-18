@@ -5,8 +5,10 @@ import time
 class ClientError(Exception):
     pass
 
+
 class ValidationError(Exception):
     pass
+
 
 class TransportError(Exception):
     pass
