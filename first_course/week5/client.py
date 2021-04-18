@@ -18,7 +18,7 @@ class Client:
     def __init__(self, addr, port, timeout=None):
         self._transport = Transport(addr, port, timeout)
 
-    def get(self, name: str):  # -> dict[str, list[tuple[int, float]]]: Закоментил чтоб в курсеру сдать
+    def get(self, name: str) -> dict[str, list[tuple[int, float]]]:
         response = self._transport.perform_request('get', name)
         self.check_status(response)
         data_dict = ResponseConstructor(response).construct()
@@ -51,7 +51,7 @@ class Transport:
     def read(self):
         return self.sock.recv(1024)
 
-    def perform_request(self, method: str, *args):  # -> list[str]:
+    def perform_request(self, method: str, *args) -> list[str]:
         self.sock.send(bytes(f'{method} {" ".join(args)}\n', encoding='utf-8'))
         data_bytes = self.read()
         data_list = self.deserializer.loads(data_bytes)
