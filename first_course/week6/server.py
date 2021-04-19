@@ -43,9 +43,10 @@ class Storage:
 
 
 class CommandHandler:
-    def __init__(self, storage, data_list):
-        self.storage = storage
-        self.data_list = data_list
+    storage = Storage()
+
+    def __init__(self, data):
+        self.data_list = data.split()
 
     def handle(self):
         command = self.define_command()
@@ -93,21 +94,15 @@ class CommandHandler:
 
 
 class ResoponseConstructor:
-    def __init__(self, data, storage):
-        self.data_list = data.split()
-        # print(self.data_list)
-        self.storage = storage
+    def __init__(self,response_data):
+        self.response_data = response_data
 
     def make_response(self):
-        error = 'error\nwrong command\n\n'
+
         ok = 'ok\n\n'
-        try:
-            response_data = CommandHandler(self.storage, self.data_list).handle()
-        except CommandHandlerError:
-            return error
-        if response_data:
+        if self.response_data:
             response = 'ok\n'
-            for key, timestamps in response_data.items():
+            for key, timestamps in self.response_data.items():
                 for timestamp, value in timestamps.items():
                     response += f'{key} {value} {timestamp}\n'
             response += '\n'
@@ -118,14 +113,19 @@ class ResoponseConstructor:
 
 class ClientServerProtocol(asyncio.Protocol):
     storage = Storage()
+    error = 'error\nwrong command\n\n'
 
     def connection_made(self, transport: Transport) -> None:
         self.transport = transport
 
     def data_received(self, data: bytes) -> None:
         data = data.decode()
-        response = ResoponseConstructor(data, self.storage).make_response()
-        print(response)
+        try:
+            response_dict = CommandHandler(data).handle()
+            response = ResoponseConstructor(response_dict).make_response()
+        except CommandHandlerError:
+            response = self.error
+        #print(response)
         self.transport.write(response.encode('utf-8'))
 
 
