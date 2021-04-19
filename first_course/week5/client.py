@@ -58,7 +58,7 @@ class Transport:
                 data += self.sock.recv(1024)
             return data
         except socket.error as err:
-            ClientError('Error.Cannot close connection', err)
+            TransportError('Error.Cannot close connection', err)
 
     def send(self, data):
         try:
@@ -76,7 +76,7 @@ class Transport:
         try:
             self.sock.close()
         except socket.error as err:
-            ClientError('Error.Cannot close connection', err)
+            TransportError('Error.Cannot close connection', err)
 
 
 class Deserializer:
