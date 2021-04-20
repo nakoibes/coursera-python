@@ -45,8 +45,8 @@ class Storage:
 class CommandHandler:
     storage = Storage()
 
-    def handle(self, data):
-        method, *params = data.split()
+    def handle(self, request):
+        method, *params = request.split()
         if method == 'put':
             key, value, timestamp = params
             value, timestamp = float(value), int(timestamp)
@@ -55,31 +55,36 @@ class CommandHandler:
         elif method == 'get':
             key = params.pop()
             if params:
-                raise CommandHandlerError
+                raise CommandHandlerError('wrong command')
             storage_response = self.storage.get(key)
             return storage_response
         else:
-            raise CommandHandlerError
+            raise CommandHandlerError('wrong command')
+
+    @staticmethod
+    def error():
+        error = 'error\nwrong command\n\n'
+        return error
 
 
 class ResoponseConstructor:
-    def __init__(self):
-        self.ok = 'ok\n\n'
+    ok = 'ok\n\n'
+    sep = '\n'
+    error = 'error\nwrong command\n\n'
 
-    def make_response(self, response_data):
+    def make_response(self, metrics):
         response = 'ok\n'
-        if response_data:
-            for key, timestamps in response_data.items():
+        if metrics:
+            for key, timestamps in metrics.items():
                 for timestamp, value in timestamps.items():
-                    response += f'{key} {value} {timestamp}\n'
-            response += '\n'
+                    response += (f'{key} {value} {timestamp}' + self.sep)
+            response += self.sep
             return response
         else:
             return self.ok
 
 
 class ClientServerProtocol(asyncio.Protocol):
-    error = 'error\nwrong command\n\n'
 
     def __init__(self):
         self.command_handler = CommandHandler()
@@ -89,14 +94,16 @@ class ClientServerProtocol(asyncio.Protocol):
         self.transport = transport
 
     def data_received(self, data: bytes) -> None:
-        data = data.decode()
+        request = data.decode()
         try:
-            response_dict = self.command_handler.handle(data)
-            response = self.response_constructor.make_response(response_dict)
+            storage_response = self.command_handler.handle(request)
+            response = self.response_constructor.make_response(storage_response)
         except (CommandHandlerError, ValueError, IndexError) as err:
             print(err)
-            response = self.error
-        # print(response)
+            response = self.command_handler.error()
+        except Exception as err:
+            print(err)
+            response = self.command_handler.error()
         self.transport.write(response.encode('utf-8'))
 
 
