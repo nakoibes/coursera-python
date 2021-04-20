@@ -64,7 +64,7 @@ class Transport:
         try:
             self.sock.send(data)
         except socket.error as err:
-            raise ClientError("Error sending data to server", err)
+            raise TransportError("Error sending data to server", err)
 
     def perform_request(self, method: str, *args) -> list[str]:
         self.send(bytes(f'{method} {" ".join(args)}\n', encoding='utf-8'))
