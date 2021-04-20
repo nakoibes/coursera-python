@@ -49,22 +49,26 @@ class CommandHandler:
         self.data_list = data.split()
 
     def handle(self):
-        command = self.define_command()
-        if command == 'put':
+        method = self.data_list[0]
+        if method == 'put':
             storage_response = self.put_data()
             return storage_response
-        elif command == 'get':
+        elif method == 'get':
+            self.data_list = self.data_list[1:]
             storage_response = self.get_data()
             return storage_response
         else:
             raise CommandHandlerError
 
     def get_data(self):
-        key = self.data_list[1]
+        key = self.data_list.pop()
+        if self.data_list:
+            raise CommandHandlerError
         response_dict = self.storage.get(key)
         return response_dict
 
     def put_data(self):
+        print(self.data_list)
         key, value, timestamp = map(str, self.data_list[1:])
         if self.validate(value, timestamp):
             value = str(float(value))
@@ -81,16 +85,16 @@ class CommandHandler:
         except:
             return False
 
-    def define_command(self):
-        if self.data_list:
-            if self.data_list[0] == 'put' and 1 < len(self.data_list) < 5:
-                return 'put'
-            elif self.data_list[0] == 'get' and len(self.data_list) == 2:
-                return 'get'
-            else:
-                raise CommandHandlerError
-        else:
-            raise CommandHandlerError
+    # def define_command(self):
+    #     if self.data_list:
+    #         if self.data_list[0] == 'put' and 1 < len(self.data_list) < 5:
+    #             return 'put'
+    #         elif self.data_list[0] == 'get' and len(self.data_list) == 2:
+    #             return 'get'
+    #         else:
+    #             raise CommandHandlerError
+    #     else:
+    #         raise CommandHandlerError
 
 
 class ResoponseConstructor:
@@ -123,7 +127,7 @@ class ClientServerProtocol(asyncio.Protocol):
         try:
             response_dict = CommandHandler(data).handle()
             response = ResoponseConstructor(response_dict).make_response()
-        except CommandHandlerError:
+        except (CommandHandlerError, ValueError,IndexError):
             response = self.error
         #print(response)
         self.transport.write(response.encode('utf-8'))
