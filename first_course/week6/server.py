@@ -46,28 +46,28 @@ class CommandHandler:
     storage = Storage()
 
     def handle(self, data):
-        self.data_list = data.split()
-        method = self.data_list[0]
+        data_list = data.split()
+        method = data_list[0]
         if method == 'put':
-            storage_response = self.put_data()
+            storage_response = self.put_data(data_list)
             return storage_response
         elif method == 'get':
-            self.data_list = self.data_list[1:]
-            storage_response = self.get_data()
+            data_list = data_list[1:]
+            storage_response = self.get_data(data_list)
             return storage_response
         else:
             raise CommandHandlerError
 
-    def get_data(self):
-        key = self.data_list.pop()
-        if self.data_list:
+    def get_data(self, data_list):
+        key = data_list.pop()
+        if data_list:
             raise CommandHandlerError
         response_dict = self.storage.get(key)
         return response_dict
 
-    def put_data(self):
-        print(self.data_list)
-        key, value, timestamp = map(str, self.data_list[1:])
+    def put_data(self, data_list):
+        # print(data_list)
+        key, value, timestamp = map(str, data_list[1:])
         if self.validate(value, timestamp):
             value = str(float(value))
             self.storage.put(key, timestamp, value)
