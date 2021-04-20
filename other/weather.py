@@ -10,6 +10,7 @@ class WheatherForecast:
         self._city_cache = {}
 
     def get(self, city):
+
         if city in self._city_cache:
             return self._city_cache[city]
         else:
