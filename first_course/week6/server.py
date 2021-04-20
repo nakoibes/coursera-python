@@ -45,10 +45,8 @@ class Storage:
 class CommandHandler:
     storage = Storage()
 
-    def __init__(self, data):
+    def handle(self, data):
         self.data_list = data.split()
-
-    def handle(self):
         method = self.data_list[0]
         if method == 'put':
             storage_response = self.put_data()
@@ -85,25 +83,14 @@ class CommandHandler:
         except:
             return False
 
-    # def define_command(self):
-    #     if self.data_list:
-    #         if self.data_list[0] == 'put' and 1 < len(self.data_list) < 5:
-    #             return 'put'
-    #         elif self.data_list[0] == 'get' and len(self.data_list) == 2:
-    #             return 'get'
-    #         else:
-    #             raise CommandHandlerError
-    #     else:
-    #         raise CommandHandlerError
-
 
 class ResoponseConstructor:
-    def __init__(self,response_data):
+    def __init__(self, response_data):
         self.response_data = response_data
+        self.ok = 'ok\n\n'
 
     def make_response(self):
 
-        ok = 'ok\n\n'
         if self.response_data:
             response = 'ok\n'
             for key, timestamps in self.response_data.items():
@@ -112,12 +99,14 @@ class ResoponseConstructor:
             response += '\n'
             return response
         else:
-            return ok
+            return self.ok
 
 
 class ClientServerProtocol(asyncio.Protocol):
-    storage = Storage()
-    error = 'error\nwrong command\n\n'
+    command_handler = CommandHandler()
+
+    def __init__(self):
+        self.error = 'error\nwrong command\n\n'
 
     def connection_made(self, transport: Transport) -> None:
         self.transport = transport
@@ -125,11 +114,10 @@ class ClientServerProtocol(asyncio.Protocol):
     def data_received(self, data: bytes) -> None:
         data = data.decode()
         try:
-            response_dict = CommandHandler(data).handle()
+            response_dict = self.command_handler.handle(data)
             response = ResoponseConstructor(response_dict).make_response()
-        except (CommandHandlerError, ValueError,IndexError):
+        except (CommandHandlerError, ValueError, IndexError):
             response = self.error
-        #print(response)
         self.transport.write(response.encode('utf-8'))
 
 
