@@ -88,16 +88,16 @@ class ResoponseConstructor:
     def __init__(self, response_data):
         self.response_data = response_data
         self.ok = 'ok\n\n'
+        self.response = 'ok\n'
 
     def make_response(self):
 
         if self.response_data:
-            response = 'ok\n'
             for key, timestamps in self.response_data.items():
                 for timestamp, value in timestamps.items():
-                    response += f'{key} {value} {timestamp}\n'
-            response += '\n'
-            return response
+                    self.response += f'{key} {value} {timestamp}\n'
+            self.response += '\n'
+            return self.response
         else:
             return self.ok
 
