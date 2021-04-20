@@ -58,7 +58,7 @@ class Transport:
                 data += self.sock.recv(1024)
             return data
         except socket.error as err:
-            TransportError('Error.Cannot close connection', err)
+            TransportError('Error.Bad data', err)
 
     def send(self, data):
         try:
