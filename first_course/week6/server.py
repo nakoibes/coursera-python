@@ -61,10 +61,7 @@ class CommandHandler:
         else:
             raise CommandHandlerError('wrong command')
 
-    @staticmethod
-    def error():
-        error = 'error\nwrong command\n\n'
-        return error
+
 
 
 class ResoponseConstructor:
@@ -83,6 +80,11 @@ class ResoponseConstructor:
         else:
             return self.ok
 
+    @staticmethod
+    def error():
+        error = 'error\nwrong command\n\n'
+        return error
+
 
 class ClientServerProtocol(asyncio.Protocol):
 
@@ -100,10 +102,10 @@ class ClientServerProtocol(asyncio.Protocol):
             response = self.response_constructor.make_response(storage_response)
         except (CommandHandlerError, ValueError, IndexError) as err:
             print(err)
-            response = self.command_handler.error()
+            response = self.response_constructor.error()
         except Exception as err:
             print(err)
-            response = self.command_handler.error()
+            response = self.response_constructor.error()
         self.transport.write(response.encode('utf-8'))
 
 
