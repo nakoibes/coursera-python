@@ -75,7 +75,6 @@ class ResoponseConstructor:
         response += self.sep
         return response
 
-
     def make_error_response(self):
         return self.error_code
 
