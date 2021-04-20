@@ -69,14 +69,12 @@ class ResoponseConstructor:
 
     def make_response(self, metrics):
         response = 'ok\n'
-        if metrics:
-            for key, timestamps in metrics.items():
-                for timestamp, value in timestamps.items():
-                    response += (f'{key} {value} {timestamp}' + self.sep)
-            response += self.sep
-            return response
-        else:
-            return self.ok_code
+        for key, timestamps in metrics.items():
+            for timestamp, value in timestamps.items():
+                response += (f'{key} {value} {timestamp}' + self.sep)
+        response += self.sep
+        return response
+
 
     def make_error_response(self):
         return self.error_code
