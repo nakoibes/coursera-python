@@ -49,7 +49,6 @@ class Game:
         pygame.display.set_caption("MyScreenSaver")
 
         while self.working:
-            # print('-----------')
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.working = False
@@ -119,7 +118,6 @@ class Polyline:
         self.display = display
 
     def draw_points(self, points, style="points", width=3, color=(255, 255, 255)):
-        # print('-----------')
         if style == "line":
             for p_n in range(-1, len(points) - 1):
                 pygame.draw.line(self.display, color,
