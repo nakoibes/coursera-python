@@ -37,7 +37,7 @@ class TestFactorize(unittest.TestCase):
                 self.assertEqual(factorize(x), exp)
 
     def test_many_multipliers(self):
-        test_cases = ((1001, (7, 11, 13), (9699690, (2, 3, 5, 7, 11, 13, 17, 19))))
+        test_cases = (1001, (7, 11, 13), (9699690, (2, 3, 5, 7, 11, 13, 17, 19)))
         for x, exp in test_cases:
             with self.subTest(x=x):
                 self.assertEqual(factorize(x), exp)
