@@ -144,7 +144,7 @@ class Vec2d:
         return math.sqrt(self.x ** 2 + self.y ** 2)
 
     def int_pair(self):
-        return (self.x, self.y)
+        return self.x, self.y
 
     def __repr__(self):
         return f'{self.x} {self.y}'
