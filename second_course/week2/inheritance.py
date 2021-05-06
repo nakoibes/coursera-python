@@ -12,13 +12,11 @@ class Base(ABC):
 
     def get_score(self):
         ans = self.get_answer()
-        return sum([int(x == y) for (x, y) in zip(ans, self.result)]) \
-               / len(ans)
+        return sum([int(x == y) for (x, y) in zip(ans, self.result)]) / len(ans)
 
     @abstractmethod
     def get_loss(self):
         pass
-
 
 
 class A(Base):
