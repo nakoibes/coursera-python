@@ -135,9 +135,10 @@ class Vec2d:
     def __sub__(self, other):
         return Vec2d(self.x - other.x, self.y - other.y)
 
-    def __mul__(self, k):
+    def __mul__(self, other):
         # print('----------')
-        return Vec2d(self.x * k.x, self.y * k.y)
+        other = Vec2d(other,other)
+        return Vec2d(self.x * other.x, self.y * other.y)
 
     def __len__(self):
         return math.sqrt(self.x ** 2 + self.y ** 2)
@@ -187,7 +188,7 @@ class Polyline:
             deg = len(points) - 1
         if deg == 0:
             return points[0]
-        return points[deg] * Vec2d(alpha, alpha) + self.get_point(points, alpha, deg - 1) * Vec2d(1 - alpha, 1 - alpha)
+        return points[deg] * alpha + self.get_point(points, alpha, deg - 1) * (1 - alpha)
 
 
 class Knot(Polyline):
@@ -198,9 +199,9 @@ class Knot(Polyline):
         for i in range(-2, len(points) - 2):
             ptn = []
             # print(type(self.points[i + 1]))
-            ptn.append((points[i] + points[i + 1]) * Vec2d(0.5, 0.5))
+            ptn.append((points[i] + points[i + 1]) * 0.5)
             ptn.append(points[i + 1])
-            ptn.append((points[i + 1] + points[i + 2]) * Vec2d(0.5, 0.5))
+            ptn.append((points[i + 1] + points[i + 2]) * 0.5)
 
             res.extend(self.get_points(ptn, count))
         return res
