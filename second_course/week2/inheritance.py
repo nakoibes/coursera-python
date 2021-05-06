@@ -10,21 +10,18 @@ class Base(ABC):
     def get_answer(self):
         return [int(x >= 0.5) for x in self.data]
 
-    @abstractmethod
-    def get_loss(self):
-        pass
-
-    @abstractmethod
-    def get_score(self):
-        pass
-
-
-class A(Base):
-
     def get_score(self):
         ans = self.get_answer()
         return sum([int(x == y) for (x, y) in zip(ans, self.result)]) \
                / len(ans)
+
+    @abstractmethod
+    def get_loss(self):
+        pass
+
+
+
+class A(Base):
 
     def get_loss(self):
         return sum(
@@ -56,11 +53,6 @@ class B(Base):
 
 
 class C(Base):
-
-    def get_score(self):
-        ans = self.get_answer()
-        return sum([int(x == y) for (x, y) in zip(ans, self.result)]) \
-               / len(ans)
 
     def get_loss(self):
         return sum([abs(x - y) for (x, y) in zip(self.data, self.result)])
