@@ -52,8 +52,3 @@ class MappingAdapter:
 
         print(self.adaptee.grid)
         return self.adaptee.grid
-
-
-s = System()
-ad = MappingAdapter(Light((0, 0)))
-s.get_lightening(ad)
