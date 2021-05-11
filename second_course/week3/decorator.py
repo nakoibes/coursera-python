@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
 
+
 #from hero import Hero
 
 
 class AbstractEffect(ABC, Hero):
+    def __init__(self, base):
+        self.base = base
+
     @abstractmethod
     def get_positive_effects(self):
         pass
@@ -14,48 +18,24 @@ class AbstractEffect(ABC, Hero):
 
 
 class AbstractPositive(AbstractEffect):
-    def __init__(self, base):
-        self.base = base
-
-    @abstractmethod
-    def get_positive_effects(self):
-        pass
-
-    @abstractmethod
-    def get_negative_effects(self):
-        pass
-
-    @abstractmethod
-    def get_stats(self):
-        pass
-
-
-class AbstractNegative(AbstractEffect):
-    def __init__(self, base):
-        self.base = base
-
-    @abstractmethod
-    def get_negative_effects(self):
-        pass
-
-    @abstractmethod
-    def get_stats(self):
-        pass
-
-
-class Berserk(AbstractPositive):
     def get_negative_effects(self):
         return self.base.get_negative_effects()
 
+
+class AbstractNegative(AbstractEffect):
     def get_positive_effects(self):
-        # print('---')
-        tmp = self.base.get_positive_effects().copy()
+        return self.base.get_positive_effects()
+
+
+class Berserk(AbstractPositive):
+
+    def get_positive_effects(self):
+        tmp = self.base.get_positive_effects()
         tmp.append('Berserk')
-        # print(tmp)
         return tmp
 
     def get_stats(self):
-        tmp = self.base.get_stats().copy()
+        tmp = self.base.get_stats()
         tmp['Strength'] += 7
         tmp['Luck'] += 7
         tmp['Agility'] += 7
@@ -68,16 +48,14 @@ class Berserk(AbstractPositive):
 
 
 class Blessing(AbstractPositive):
-    def get_negative_effects(self):
-        return self.base.get_negative_effects()
 
     def get_positive_effects(self):
-        tmp = self.base.get_positive_effects().copy()
+        tmp = self.base.get_positive_effects()
         tmp.append('Blessing')
         return tmp
 
     def get_stats(self):
-        tmp = self.base.get_stats().copy()
+        tmp = self.base.get_stats()
         tmp['Strength'] += 2
         tmp['Perception'] += 2
         tmp['Endurance'] += 2
@@ -89,11 +67,9 @@ class Blessing(AbstractPositive):
 
 
 class Weakness(AbstractNegative):
-    def get_positive_effects(self):
-        return self.base.get_positive_effects()
 
     def get_negative_effects(self):
-        tmp = self.base.get_negative_effects().copy()
+        tmp = self.base.get_negative_effects()
         tmp.append('Weakness')
         return tmp
 
@@ -106,8 +82,6 @@ class Weakness(AbstractNegative):
 
 
 class EvilEye(AbstractNegative):
-    def get_positive_effects(self):
-        return self.base.get_positive_effects()
 
     def get_negative_effects(self):
         tmp = self.base.get_negative_effects()
@@ -121,8 +95,6 @@ class EvilEye(AbstractNegative):
 
 
 class Curse(AbstractNegative):
-    def get_positive_effects(self):
-        return self.base.get_positive_effects()
 
     def get_negative_effects(self):
         tmp = self.base.get_negative_effects()
@@ -139,12 +111,3 @@ class Curse(AbstractNegative):
         tmp['Agility'] -= 2
         tmp['Luck'] -= 2
         return tmp
-
-# h = Hero()
-# # print(h.get_stats())
-# #a = AbstractEffect(h)
-# b = Berserk(h)
-# #b.get_positive_effects()
-# bl = Blessing(b)
-# print(bl.get_positive_effects())
-# print(bl.get_stats())
