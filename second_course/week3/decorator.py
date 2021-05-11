@@ -9,6 +9,10 @@ class AbstractEffect(ABC, Hero):
         self.base = base
 
     @abstractmethod
+    def get_negative_effects(self):
+        pass
+
+    @abstractmethod
     def get_positive_effects(self):
         pass
 
