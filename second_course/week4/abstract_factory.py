@@ -69,7 +69,6 @@ class MediumLevel(AbstractLevel):
             self.objects = [('next_lvl', (4, 4))]
 
         def get_objects(self, map_obj):
-            # размещаем врагов
             for obj_name in ['rat', 'snake']:
                 coord = (random.randint(1, 6), random.randint(1, 6))
                 intersect = True
