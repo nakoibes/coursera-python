@@ -7,11 +7,13 @@ class SomeObject:
 
 class EventGet:
     def __init__(self, type_):
-        self.type = type_
+        self.kind = {int: 'int', float: 'float', str: 'str'}[type_]
+        self.value = None
 
 
 class EventSet:
     def __init__(self, value):
+        self.kind = {int: 'int', float: 'float', str: 'str'}[type(value)]
         self.value = value
 
 
@@ -26,31 +28,33 @@ class NullHandler:
 
 class IntHandler(NullHandler):
     def handle(self, obj, event):
-        if isinstance(event, EventGet) and event.type == int:
-            return obj.integer_field
-        elif isinstance(event, EventSet) and isinstance(event.value, int):
-            obj.integer_field = event.value
+        if event.kind == 'int':
+            if event.value is None:
+                return obj.integer_field
+            else:
+                obj.integer_field = event.value
         else:
             return super().handle(obj, event)
 
 
 class FloatHandler(NullHandler):
     def handle(self, obj, event):
-        if isinstance(event, EventGet) and event.type == float:
-            return obj.float_field
-        elif isinstance(event, EventSet) and isinstance(event.value, float):
-            obj.float_field = event.value
+        if event.kind == 'float':
+            if event.value is None:
+                return obj.float_field
+            else:
+                obj.float_field = event.value
         else:
             return super().handle(obj, event)
 
 
 class StrHandler(NullHandler):
     def handle(self, obj, event):
-        if isinstance(event, EventGet) and event.type == str:
-            return obj.string_field
-        elif isinstance(event, EventSet) and isinstance(event.value, str):
-            obj.string_field = event.value
+        if event.kind == 'str':
+            if event.value is None:
+                return obj.string_field
+            else:
+                obj.string_field = event.value
         else:
             return super().handle(obj, event)
-
 
