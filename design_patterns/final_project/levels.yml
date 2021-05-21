@@ -1,0 +1,13 @@
+levels:
+  - !special_map
+    rat: 5
+    bird: 5
+  - !special_map
+    rat: 10
+    bird: 10
+    knight: 5
+  - !special_map
+    rat: 10
+    knight: 10
+    dragon: 2
+  - !random_map {}
