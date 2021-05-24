@@ -1,10 +1,8 @@
-import math
-import random
+import pygame
+
 import Engine
 import Objects
-import Service
 import Screen
-import pygame
 
 
 class Application:
@@ -35,7 +33,7 @@ class Application:
         self.engine.subscribe_knot(knot)
         main_chain = Screen.MainSurface((800, 600), (0, 0),
                                         Screen.HelpWindow((800, 600), pygame.SRCALPHA, (0, 0),
-                                        Screen.ScreenHandle((0, 0))))
+                                                          Screen.ScreenHandle((0, 0))))
         main_chain.connect_engine(self.engine)
         return main_chain
 
