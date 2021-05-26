@@ -1,6 +1,7 @@
-from Service import Vec2d
-import Service
 import random
+
+import Service
+from Service import Vec2d
 
 
 class Polyline:

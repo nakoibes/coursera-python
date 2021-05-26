@@ -1,5 +1,5 @@
-import random
 import math
+import random
 
 colors = {
     "black": (0, 0, 0, 255),
@@ -71,9 +71,3 @@ class KnotConstructor:
         if deg == 0:
             return points[0]
         return points[deg] * alpha + self.get_point(points, alpha, deg - 1) * (1 - alpha)
-
-
-
-
-
-

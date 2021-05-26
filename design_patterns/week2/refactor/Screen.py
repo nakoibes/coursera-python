@@ -1,6 +1,8 @@
-import pygame
-import Service
 import collections
+
+import pygame
+
+import Service
 
 
 class ScreenHandle(pygame.Surface):
@@ -54,7 +56,7 @@ class HelpWindow(ScreenHandle):
 
     def __init__(self, *args, **kwargs):
         self.engine = None
-        #self.current_knot = 0
+        # self.current_knot = 0
         super().__init__(*args, **kwargs)
         self.len = 30
         self.blue = (128, 128, 255)
@@ -92,7 +94,7 @@ class HelpWindow(ScreenHandle):
             self.blit(font2.render(f'You are editing knot {current_knot + 1}', True, self.blue), (50, 50))
             for i, text in enumerate(data):
                 self.blit(font1.render(text[0], True, self.blue),
-                          (50, 50 + 30 * (i+1)))
+                          (50, 50 + 30 * (i + 1)))
                 self.blit(font2.render(text[1], True, self.blue),
-                          (150, 50 + 30 * (i+1)))
+                          (150, 50 + 30 * (i + 1)))
         super().draw(canvas)

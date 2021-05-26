@@ -1,5 +1,6 @@
 import Service
 
+
 class Engine:
     knots = []
     current_knot = 0
@@ -14,7 +15,7 @@ class Engine:
     def subscribe_knot(self, knot):
         self.knots.append(knot)
 
-    def subscribe(self,obj):
+    def subscribe(self, obj):
         self.subscribers.add(obj)
 
     def unsubscribe_knot(self, knot):
