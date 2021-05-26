@@ -23,7 +23,7 @@ class Engine:
 
     def notify(self):
         for obj in self.subscribers:
-            obj.current_knot = self.current_knot
+            pass
 
     def update(self):
         for knot in self.knots:
@@ -44,3 +44,6 @@ class Engine:
                 knot.speeds[p] = Service.Vec2d(- knot.speeds[p].int_pair()[0], knot.speeds[p].int_pair()[1])
             if knot.points[p].int_pair()[1] > self.screen_resolution[1] or knot.points[p].int_pair()[1] < 0:
                 knot.speeds[p] = Service.Vec2d(knot.speeds[p].int_pair()[0], -knot.speeds[p].int_pair()[1])
+
+    def restart(self):
+        self.knots = []

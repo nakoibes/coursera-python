@@ -24,21 +24,19 @@ class Application:
         return number
 
     def restart(self):
-        self.engine.knots = []
-        knot = Objects.Knot()
-        self.engine.subscribe_knot(knot)
+        self.engine.restart()
+        self.add_knot()
 
     def prepare(self):
-        knot = Objects.Knot()
-        self.engine.subscribe_knot(knot)
-        main_chain = Screen.MainSurface((800, 600), (0, 0),
-                                        Screen.HelpWindow((800, 600), pygame.SRCALPHA, (0, 0),
+        self.add_knot()
+        main_chain = Screen.MainSurface(self.screen_resolution, (0, 0),
+                                        Screen.HelpWindow(self.screen_resolution, pygame.SRCALPHA, (0, 0),
                                                           Screen.ScreenHandle((0, 0))))
         main_chain.connect_engine(self.engine)
         return main_chain
 
     def run(self):
-        edit_knot = 0
+        current_knot = 0
         pygame.init()
         main_chain = self.prepare()
         while self.engine.working:
@@ -52,30 +50,30 @@ class Application:
                         self.engine.pause = not self.engine.pause
                     if event.key == pygame.K_r:
                         self.restart()
-                        edit_knot = 0
+                        current_knot = 0
                     if event.key == pygame.K_m:
-                        self.engine.knots[edit_knot].remove_point()
+                        self.engine.knots[current_knot].remove_point()
                     if event.key == pygame.K_f:
-                        self.engine.knots[edit_knot].increase_speed()
+                        self.engine.knots[current_knot].increase_speed()
                     if event.key == pygame.K_s:
-                        self.engine.knots[edit_knot].decrease_speed()
+                        self.engine.knots[current_knot].decrease_speed()
                     if event.key == pygame.K_KP_PLUS:
-                        self.engine.knots[edit_knot].increase_steps()
+                        self.engine.knots[current_knot].increase_steps()
                     if event.key == pygame.K_F1:
                         self.engine.show_help = not self.engine.show_help
                     if event.key == pygame.K_KP_MINUS:
-                        self.engine.knots[edit_knot].decrease_steps()
+                        self.engine.knots[current_knot].decrease_steps()
                     if event.key == pygame.K_n:
                         self.add_knot()
                     if event.key == pygame.K_1:
-                        edit_knot = self.switch_knot(0)
+                        current_knot = self.switch_knot(0)
                     if event.key == pygame.K_2:
-                        edit_knot = self.switch_knot(1)
+                        current_knot = self.switch_knot(1)
                     if event.key == pygame.K_3:
-                        edit_knot = self.switch_knot(2)
+                        current_knot = self.switch_knot(2)
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.engine.knots[edit_knot].fetch_point(event.pos)
+                    self.engine.knots[current_knot].fetch_point(event.pos)
             self.game_display.blit(main_chain, (0, 0))
             self.engine.update()
             main_chain.draw(self.game_display)

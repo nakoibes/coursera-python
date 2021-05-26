@@ -54,30 +54,32 @@ class HelpWindow(ScreenHandle):
 
     def __init__(self, *args, **kwargs):
         self.engine = None
-        self.current_knot = 0
+        #self.current_knot = 0
         super().__init__(*args, **kwargs)
         self.len = 30
         self.blue = (128, 128, 255)
-        clear = []
-        self.data = collections.deque(clear, maxlen=self.len)
-        self.data.append(["F1", "Show Help"])
-        self.data.append(["R", "Restart"])
-        self.data.append(["P", "Pause/Play"])
-        self.data.append(["Num+", "More points"])
-        self.data.append(["Num-", "Less points"])
-        self.data.append(["F", "Move faster"])
-        self.data.append(["S", "Move slowly"])
-        self.data.append(["M", "Remove last point"])
-        self.data.append(["", ""])
-        self.data.append(["1,2,3", "Switch knot"])
-        self.data.append(["N", "Create new knot, then '2' to choose it."])
 
     def connect_engine(self, engine):
         self.engine = engine
-        self.engine.subscribe(self)
         super().connect_engine(engine)
 
     def draw(self, canvas):
+        current_knot = self.engine.current_knot
+        clear = []
+        data = collections.deque(clear, maxlen=self.len)
+        data.append(["F1", "Show Help"])
+        data.append(["R", "Restart"])
+        data.append(["P", "Pause/Play"])
+        data.append(["Num+", "More points"])
+        data.append(["Num-", "Less points"])
+        data.append(["F", "Move faster"])
+        data.append(["S", "Move slowly"])
+        data.append(["M", "Remove last point"])
+        data.append(["", ""])
+        data.append(["1,2,3", "Switch knot"])
+        data.append(["N", "Create new knot, then '2' to choose it."])
+        data.append([str(self.engine.knots[current_knot].get_speed()), "Current speed"])
+        data.append([str(self.engine.knots[current_knot].get_steps()), "Current points"])
         alpha = 0
         points = [(0, 0), (800, 0), (800, 600), (0, 600)]
         if self.engine.show_help:
@@ -87,8 +89,8 @@ class HelpWindow(ScreenHandle):
         font2 = pygame.font.SysFont("serif", 24)
         if self.engine.show_help:
             pygame.draw.lines(self, Service.colors['red'], True, points, 3)
-            self.blit(font2.render(f'You are editing knot {self.current_knot + 1}', True, self.blue),(50, 50))
-            for i, text in enumerate(self.data):
+            self.blit(font2.render(f'You are editing knot {current_knot + 1}', True, self.blue), (50, 50))
+            for i, text in enumerate(data):
                 self.blit(font1.render(text[0], True, self.blue),
                           (50, 50 + 30 * (i+1)))
                 self.blit(font2.render(text[1], True, self.blue),
