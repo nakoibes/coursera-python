@@ -27,8 +27,7 @@ class Application:
         self.engine.restart()
         self.add_knot()
 
-    def prepare(self):
-        self.add_knot()
+    def create_chain(self):
         main_chain = Screen.MainSurface(self.screen_resolution, (0, 0),
                                         Screen.HelpWindow(self.screen_resolution, pygame.SRCALPHA, (0, 0),
                                                           Screen.ScreenHandle((0, 0))))
@@ -38,7 +37,8 @@ class Application:
     def run(self):
         current_knot = 0
         pygame.init()
-        main_chain = self.prepare()
+        self.add_knot()
+        main_chain = self.create_chain()
         while self.engine.working:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
