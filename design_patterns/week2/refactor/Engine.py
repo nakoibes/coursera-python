@@ -2,7 +2,7 @@ import Service
 
 
 class Engine:
-    knots = []
+    objects = []
     current_knot = 0
     working = True
     show_help = False
@@ -13,30 +13,30 @@ class Engine:
         self.screen_resolution = screen_resolution
 
     def subscribe_knot(self, knot):
-        self.knots.append(knot)
+        self.objects.append(knot)
 
     def subscribe(self, obj):
         self.subscribers.add(obj)
 
-    def unsubscribe_knot(self, knot):
-        if knot in self.knots:
-            self.knots.remove(knot)
+    def unsubscribe_knot(self, obj):
+        if obj in self.objects:
+            self.objects.remove(obj)
 
     def notify(self):
         for obj in self.subscribers:
             pass
 
     def update(self):
-        for knot in self.knots:
-            knot.knot_points = Service.KnotConstructor(knot.points, knot.steps).get_knot()
+        for obj in self.objects:
+            obj.update()
             if self.pause is False:
-                self.move_points(knot)
+                self.move_points(obj)
 
-    def add_knot(self, knot):
-        self.knots.append(knot)
+    def add_knot(self, obj):
+        self.objects.append(obj)
 
-    def del_knot(self, knot):
-        self.knots.remove(knot)
+    def del_knot(self, obj):
+        self.objects.remove(obj)
 
     def move_points(self, knot):
         for p in range(len(knot.points)):

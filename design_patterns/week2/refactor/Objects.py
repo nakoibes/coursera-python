@@ -43,3 +43,6 @@ class Knot(Polyline):
 
     def increase_steps(self):
         self.steps += 1
+
+    def update(self):
+        self.knot_points = Service.KnotMaker(self.points, self.steps).get_knot()

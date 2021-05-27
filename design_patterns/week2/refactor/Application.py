@@ -17,7 +17,7 @@ class Application:
         self.engine.subscribe_knot(knot)
 
     def switch_knot(self, number):
-        if number >= len(self.engine.knots):
+        if number >= len(self.engine.objects):
             return self.engine.current_knot
         self.engine.current_knot = number
         self.engine.notify()
@@ -52,17 +52,17 @@ class Application:
                         self.restart()
                         current_knot = 0
                     if event.key == pygame.K_m:
-                        self.engine.knots[current_knot].remove_point()
+                        self.engine.objects[current_knot].remove_point()
                     if event.key == pygame.K_f:
-                        self.engine.knots[current_knot].increase_speed()
+                        self.engine.objects[current_knot].increase_speed()
                     if event.key == pygame.K_s:
-                        self.engine.knots[current_knot].decrease_speed()
+                        self.engine.objects[current_knot].decrease_speed()
                     if event.key == pygame.K_KP_PLUS:
-                        self.engine.knots[current_knot].increase_steps()
+                        self.engine.objects[current_knot].increase_steps()
                     if event.key == pygame.K_F1:
                         self.engine.show_help = not self.engine.show_help
                     if event.key == pygame.K_KP_MINUS:
-                        self.engine.knots[current_knot].decrease_steps()
+                        self.engine.objects[current_knot].decrease_steps()
                     if event.key == pygame.K_n:
                         self.add_knot()
                     if event.key == pygame.K_1:
@@ -73,7 +73,7 @@ class Application:
                         current_knot = self.switch_knot(2)
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.engine.knots[current_knot].fetch_point(event.pos)
+                    self.engine.objects[current_knot].fetch_point(event.pos)
             self.game_display.blit(main_chain, (0, 0))
             self.engine.update()
             main_chain.draw(self.game_display)

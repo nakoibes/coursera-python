@@ -40,7 +40,7 @@ class Vec2d:
         return f'{self.x} {self.y}'
 
 
-class KnotConstructor:
+class KnotMaker:
     def __init__(self, points, steps):
         self.points = points
         self.steps = steps

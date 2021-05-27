@@ -37,7 +37,7 @@ class MainSurface(ScreenHandle):
         super().connect_engine(engine)
 
     def draw(self, canvas):
-        for knot in self.engine.knots:
+        for knot in self.engine.objects:
             if len(knot.points) < 3:
                 for point in knot.points:
                     pygame.draw.circle(canvas, Service.colors['white'], (point.int_pair()), 3)
@@ -80,8 +80,8 @@ class HelpWindow(ScreenHandle):
         data.append(["", ""])
         data.append(["1,2,3", "Switch knot"])
         data.append(["N", "Create new knot, then '2' to choose it."])
-        data.append([str(self.engine.knots[current_knot].get_speed()), "Current speed"])
-        data.append([str(self.engine.knots[current_knot].get_steps()), "Current points"])
+        data.append([str(self.engine.objects[current_knot].get_speed()), "Current speed"])
+        data.append([str(self.engine.objects[current_knot].get_steps()), "Current points"])
         alpha = 0
         points = [(0, 0), (800, 0), (800, 600), (0, 600)]
         if self.engine.show_help:
