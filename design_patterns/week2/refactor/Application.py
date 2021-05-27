@@ -16,11 +16,15 @@ class Application:
         knot = Objects.Knot()
         self.engine.subscribe_knot(knot)
 
+    def delete_knot(self):
+        knot = self.engine.objects[self.engine.current_knot]
+        self.engine.unsubscribe_knot(knot)
+
     def switch_knot(self, number):
         if number >= len(self.engine.objects):
             return self.engine.current_knot
         self.engine.current_knot = number
-        self.engine.notify()
+        # self.engine.notify()
         return number
 
     def restart(self):
@@ -65,6 +69,12 @@ class Application:
                         self.engine.objects[current_knot].decrease_steps()
                     if event.key == pygame.K_n:
                         self.add_knot()
+                    if event.key == pygame.K_d:
+                        if current_knot != 0:
+                            self.delete_knot()
+                            self.switch_knot(0)
+                            current_knot = 0
+
                     if event.key == pygame.K_1:
                         current_knot = self.switch_knot(0)
                     if event.key == pygame.K_2:

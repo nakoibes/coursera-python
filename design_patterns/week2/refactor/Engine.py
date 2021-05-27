@@ -47,4 +47,4 @@ class Engine:
                 knot.speeds[p] = Service.Vec2d(knot.speeds[p].int_pair()[0], -knot.speeds[p].int_pair()[1])
 
     def restart(self):
-        self.knots = []
+        self.objects = []
