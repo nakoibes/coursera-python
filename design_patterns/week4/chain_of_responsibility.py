@@ -57,4 +57,3 @@ class StrHandler(NullHandler):
                 obj.string_field = event.value
         else:
             return super().handle(obj, event)
-
