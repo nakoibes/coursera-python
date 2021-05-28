@@ -24,7 +24,6 @@ class Application:
         if number >= len(self.engine.objects):
             return self.engine.current_knot
         self.engine.current_knot = number
-        # self.engine.notify()
         return number
 
     def restart(self):
