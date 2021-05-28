@@ -18,12 +18,12 @@ class EventSet:
 
 
 class NullHandler:
-    def __init__(self, next_=None):
-        self.next = next_
+    def __init__(self, successor=None):
+        self._successor = successor
 
     def handle(self, obj, event):
-        if self.next is not None:
-            return self.next.handle(obj, event)
+        if self._successor is not None:
+            return self._successor.handle(obj, event)
 
 
 class IntHandler(NullHandler):
