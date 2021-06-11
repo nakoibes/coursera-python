@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 
 
-#from hero import Hero
+# from hero import Hero
+
+class Hero:
+    pass
 
 
 class AbstractEffect(ABC, Hero):
