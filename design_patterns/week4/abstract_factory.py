@@ -10,6 +10,7 @@ class AbstractLevel:
     def get_objects(cls):
         return cls.Objects()
 
+
 class EasyLevel(AbstractLevel):
     class Map:
 
@@ -24,7 +25,6 @@ class EasyLevel(AbstractLevel):
 
         def get_map(self):
             return self._map
-
 
     class Objects:
 
@@ -47,6 +47,7 @@ class EasyLevel(AbstractLevel):
 
             return self.objects
 
+
 class MediumLevel(AbstractLevel):
     class Map:
 
@@ -61,7 +62,6 @@ class MediumLevel(AbstractLevel):
 
         def get_map(self):
             return self._map
-
 
     class Objects:
 
@@ -83,6 +83,7 @@ class MediumLevel(AbstractLevel):
 
             return self.objects
 
+
 class HardLevel(AbstractLevel):
     class Map:
 
@@ -98,11 +99,11 @@ class HardLevel(AbstractLevel):
         def get_map(self):
             return self._map
 
-
     class Objects:
 
         def __init__(self):
             self.objects = [('next_lvl', (5, 5))]
+
         def get_objects(self, map_obj):
             for obj_name in ['rat', 'snake']:
                 coord = (random.randint(1, 8), random.randint(1, 8))

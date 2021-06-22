@@ -159,7 +159,7 @@ class ProgressBar(ScreenHandle):
         super().connect_engine(engine)
 
     def draw(self, canvas):
-        self.fill(colors["wooden"])
+        #self.fill(colors["wooden"])
         pygame.draw.rect(self, colors["black"], (50, 30, 200, 30), 2)
         pygame.draw.rect(self, colors["black"], (50, 70, 200, 30), 2)
 
