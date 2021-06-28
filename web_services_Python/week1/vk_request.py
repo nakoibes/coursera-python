@@ -1,6 +1,6 @@
 import requests
 
-
+#FIXIT
 
 def calc_age(uid):
     r = requests.get(
@@ -25,11 +25,7 @@ def calc_age(uid):
 
             ans.append([result[i], 1])
 
-    ans = sorted(ans, key=lambda student: student[1], reverse=True)
-    for j in range(len(ans)):
-        for i in range(len(ans)-1):
-            if ans[i][1] == ans[i+1][1] and ans[i][0] > ans[i+1][0]:
-                ans[i],ans[i+1] = ans[i+1], ans[i]
+    ans = sorted(ans, key=lambda student: (student[1],student[0]), reverse=True)
 
     for i in range(len(ans)):
         ans[i] = tuple(ans[i])
